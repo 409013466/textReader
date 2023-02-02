@@ -47,6 +47,10 @@ class MainWindow(QMainWindow):
         self.thread.start()
         self.thread.anySignal.connect(self.initialize_ui)
 
+    def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
+        stop()
+        self.thread.terminate()
+
     def config(self):
         cfgData['readingTimes'] = int(self.ui.times.currentText())
         cfgData['rate'] = self.ui.rate.value()
