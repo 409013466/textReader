@@ -1,52 +1,74 @@
 #_*_ coding:utf-8 _*_
 import pyttsx3
 import time
-import numpy as np
 
 print('enter reader file line5')
 #engine = pyttsx3.init()
+#engine.iterate()
 
 #engine.iterate()
 #print('enter reader file line7,engine:', type(engine))
-dictData = {'engine':None, 'readingTimes':1, 'rate':15, 'interval':5}
-#readingTimes = np.array([0]*2)
-#print('readingTimes len:', len(readingTimes))
+dictData = {'engine':None, 'readingTimes':1, 'rate':15, 'interval':5, 'fileInst':None}
+dictData['flagPlay'] = True
+dictData['engine'] = pyttsx3.init()
+
 def config(times, rate, interval):
-    # 设定语速
     #rate = engine.getProperty('rate')  # rate default 200
     dictData['readingTimes'] = times
     dictData['rate'] = rate
     dictData['interval'] = interval
 
-    print('reader file times:', dictData['readingTimes'], 'reader file rate:', dictData['rate'])
+    #print('reader file times:', dictData['readingTimes'], 'interval:', dictData['interval'])
     if dictData['engine'] is not None:
-        dictData['engine'].setProperty('rate', 50+rate*10)
+        # 设定语速
+        dictData['engine'].setProperty('rate', 50+dictData['interval']*10)
 
 def play(fileName):
-    print('enter func play')
-    dictData['engine'] = pyttsx3.init()
-    with open(fileName,'r',encoding='gbk') as f:
-        print('enter func play,line22')
-        #eng_init()
-        line = f.readline()
-        while line and dictData['engine'] is not None:
-            print(line)
-            for i in range(dictData['readingTimes']):
-                if dictData['engine'] is not None:
-                    #print('i:', i, 'readingTimes[0]:', dictData['readingTimes'])
-                    dictData['engine'].say(line)
-                    dictData['engine'].runAndWait()
-                    if dictData['readingTimes'] == 1:
-                        pass
-                    else:
-                        time.sleep(dictData['interval'])
-                        #print('interval:', dictData['interval'])
-            line = f.readline()
+    # if dictData['engine'] is None:
+    #     print("dictData['engine'] is None, init engine")
+        #dictData['engine'] = pyttsx3.init()
+    # rate = dictData['engine'].getProperty('rate')
+    # print('rate', rate)
+    # 设定语速
+    dictData['engine'].setProperty('rate', 50 + dictData['rate'] * 10)
+    # print("dictData['rate']", dictData['rate'])
+    # rate = dictData['engine'].getProperty('rate')
+    # print('rate', rate)
+
+    #with open(fileName,'r',encoding='gbk') as dictData['fileInst']:
+    dictData['fileInst'] = open(fileName,'r',encoding='gbk')
+    print("enter func play,line22 dictData['engine']", dictData['engine'])
+    dictData['flagPlay'] = True
+
+    if dictData['flagPlay'] == True:
+        print("dictData['flagPlay'] == True")
+    while dictData['engine'] is not None and dictData['flagPlay'] == True:
+        line = dictData['fileInst'].readline()
+        if line == '\n':
+            dictData['fileInst'].close()
+            return
+        print('文本内容:',line)
+        for i in range(dictData['readingTimes']):
+            if dictData['engine'] is not None and dictData['flagPlay'] == True:
+                # print('i:', i, 'readingTimes:', dictData['readingTimes'])
+                # print('say(line)')
+                dictData['engine'].say(line)
+                dictData['engine'].runAndWait()
+                'runAndWait()'
+                if dictData['readingTimes'] == 1:
+                    pass
+                else:
+                    time.sleep(dictData['interval'])
+                    #print('interval:', dictData['interval'])
 
 def stop():
     if dictData['engine'] is not None:
-        dictData['engine'].stop()
-        dictData['engine'] = None
+        dictData['flagPlay'] = False
+        #dictData['engine'] = None
+        #dictData['engine'].stop()
+        if dictData['fileInst']:
+            dictData['fileInst'].close()
+
 
 if __name__ == '__main__':
     pass
